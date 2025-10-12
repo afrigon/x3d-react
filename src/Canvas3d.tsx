@@ -1,17 +1,13 @@
 import { CSSProperties, RefObject, useEffect, useRef } from "react"
+import { Renderer } from "x3d"
 
 interface Canvas3dProps {
-    vertex: string
-    fragment: string
-    init?: (context: WebGL2RenderingContext) => void
-    deinit?: (context: WebGL2RenderingContext) => void
-    resize?: (context: WebGL2RenderingContext, width: number, height: number) => void
-    draw: (context: WebGL2RenderingContext, now: number) => void
+    renderer: Renderer
     className?: string
     style?: CSSProperties
 }
 
-export default function Canvas3d({ init, deinit, resize, draw, className, style }: Canvas3dProps) {
+export default function Canvas3d({ renderer, className, style }: Canvas3dProps) {
     const ref: RefObject<HTMLCanvasElement | null> = useRef(null)
 
     useEffect(() => {
@@ -43,9 +39,7 @@ export default function Canvas3d({ init, deinit, resize, draw, className, style 
                 canvas.height = height
                 gl.viewport(0, 0, width, height)
 
-                if (resize) {
-                    resize(gl, width, height)
-                }
+                renderer.resize(gl, width, height)
             }
         }
 
@@ -58,15 +52,13 @@ export default function Canvas3d({ init, deinit, resize, draw, className, style 
                 return
             }
 
-            draw(gl, now)
+            renderer.draw(gl, now)
         }
 
         const observer = new ResizeObserver(_resize)
         observer.observe(canvas)
 
-        if (init) {
-            init(gl)
-        }
+        renderer.init(gl)
 
         frameId = requestAnimationFrame(_draw)
 
@@ -74,9 +66,7 @@ export default function Canvas3d({ init, deinit, resize, draw, className, style 
             observer.disconnect()
             cancelAnimationFrame(frameId)
 
-            if (deinit) {
-                deinit(gl)
-            }
+            renderer.deinit(gl)
         }
     })
 
