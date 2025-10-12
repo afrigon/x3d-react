@@ -11,13 +11,13 @@ interface Canvas3dProps {
     style?: CSSProperties
 }
 
-export default function Canvas3d({ init, deinit, resize, draw, className, style } : Canvas3dProps) {
+export default function Canvas3d({ init, deinit, resize, draw, className, style }: Canvas3dProps) {
     const ref: RefObject<HTMLCanvasElement | null> = useRef(null)
 
     useEffect(() => {
         const canvas = ref.current
 
-            if (!canvas) {
+        if (!canvas) {
             return
         }
 
@@ -69,7 +69,7 @@ export default function Canvas3d({ init, deinit, resize, draw, className, style 
         }
 
         frameId = requestAnimationFrame(_draw)
-    
+
         return () => {
             observer.disconnect()
             cancelAnimationFrame(frameId)
@@ -80,7 +80,5 @@ export default function Canvas3d({ init, deinit, resize, draw, className, style 
         }
     })
 
-    return (
-        <canvas className={className} style={style} ref={ref}></canvas>
-    )
+    return <canvas className={className} style={style} ref={ref}></canvas>
 }
