@@ -1,0 +1,50 @@
+{
+  "name": "x3d-react",
+  "version": "0.0.1",
+  "license": "MIT",
+  "author": "xehos",
+  "keywords": [
+    "webgl",
+    "3d",
+    "engine"
+  ],
+  "homepage": "https://github.com/afrigon/x3d-js#readme",
+  "bugs": {
+    "url": "https://github.com/afrigon/x3d-js/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/afrigon/x3d-js.git"
+  },
+  "type": "module",
+  "files": "dist/**",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "lint": "eslint src prettier.config.ts eslint.config.ts --fix",
+    "prettier": "prettier src prettier.config.ts eslint.config.ts --write",
+    "type-check": "tsc --noEmit",
+    "build": "tsc",
+    "clean": "rimraf dist",
+    "prepare": "npm run clean && npm run build"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.36.0",
+    "@types/node": "^24.6.2",
+    "@types/react": "^19.2.2",
+    "@typescript-eslint/eslint-plugin": "^8.46.0",
+    "eslint": "^9.36.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.0.0",
+    "jiti": "^2.6.1",
+    "prettier": "^3.6.2",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.45.0"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "x3d": "github:afrigon/x3d-js"
+  }
+}
