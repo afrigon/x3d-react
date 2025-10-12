@@ -7,7 +7,7 @@ interface Canvas3dProps {
     style?: CSSProperties
 }
 
-export default function Canvas3d({ renderer, className, style }: Canvas3dProps) {
+export function Canvas3d({ renderer, className, style }: Canvas3dProps) {
     const ref: RefObject<HTMLCanvasElement | null> = useRef(null)
 
     useEffect(() => {
