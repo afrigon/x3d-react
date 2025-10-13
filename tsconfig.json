@@ -10,6 +10,8 @@
         "moduleDetection": "force",
 		"resolveJsonModule": true,
         "strict": true,
+		"declaration": true,
+		"declarationMap": true,
         "jsx": "react-jsx",
         "isolatedModules": true,
         "outDir": "dist"
