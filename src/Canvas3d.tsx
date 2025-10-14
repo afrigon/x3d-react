@@ -2,7 +2,7 @@ import { CSSProperties, RefObject, useEffect, useRef } from "react"
 import { Renderer } from "x3d"
 
 interface Canvas3dProps {
-    renderer: Renderer
+    renderer: Renderer<WebGL2RenderingContext>
     className?: string
     style?: CSSProperties
 }
@@ -37,9 +37,7 @@ export function Canvas3d({ renderer, className, style }: Canvas3dProps) {
             if (canvas.width != width || canvas.height != height) {
                 canvas.width = width
                 canvas.height = height
-                gl.viewport(0, 0, width, height)
-
-                renderer.resize(gl, width, height)
+                renderer.resize(width, height)
             }
         }
 
@@ -52,7 +50,7 @@ export function Canvas3d({ renderer, className, style }: Canvas3dProps) {
                 return
             }
 
-            renderer.draw(gl, now)
+            renderer.draw(now)
         }
 
         const observer = new ResizeObserver(_resize)
@@ -66,9 +64,9 @@ export function Canvas3d({ renderer, className, style }: Canvas3dProps) {
             observer.disconnect()
             cancelAnimationFrame(frameId)
 
-            renderer.deinit(gl)
+            renderer.deinit()
         }
     })
 
-    return <canvas className={className} style={style} ref={ref}></canvas>
+    return <canvas ref={ref} className={className} style={style}></canvas>
 }
