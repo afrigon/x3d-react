@@ -3,12 +3,14 @@ import * as x3d from "x3d"
 import { Canvas3d } from "./Canvas3d"
 
 interface ManagedCanvas3dProps {
+    onInit: (renderer: x3d.SceneRenderer) => void,
+    onResize: (renderer: x3d.SceneRenderer, width: number, height: number) => void,
     onDraw: (renderer: x3d.SceneRenderer, now: number) => void,
     className?: string
     style?: CSSProperties
 }
 
-export function ManagedCanvas3d({ onDraw, className, style }: ManagedCanvas3dProps) {
+export function ManagedCanvas3d({ onInit, onResize, onDraw, className, style }: ManagedCanvas3dProps) {
     const ref: RefObject<x3d.SceneRenderer | null> = useRef(null)
 
     useEffect(() => {
@@ -31,6 +33,7 @@ export function ManagedCanvas3d({ onDraw, className, style }: ManagedCanvas3dPro
 
             if (renderer.canvas.width != width || renderer.canvas.height != height) {
                 renderer.resize(width, height)
+                onResize(renderer, width, height)
             }
         }
 
@@ -48,6 +51,8 @@ export function ManagedCanvas3d({ onDraw, className, style }: ManagedCanvas3dPro
 
         const observer = new ResizeObserver(_resize)
         observer.observe(renderer.canvas)
+
+        onInit(renderer)
 
         frameId = requestAnimationFrame(_draw)
 
