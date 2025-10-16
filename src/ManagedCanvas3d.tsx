@@ -31,7 +31,7 @@ export function ManagedCanvas3d({ onInit, onResize, onDraw, className, style }: 
             const width = Math.max(1, Math.floor(renderer.canvas.clientWidth * ratio))
             const height = Math.max(1, Math.floor(renderer.canvas.clientHeight * ratio))
 
-            if (renderer.canvas.clientWidth != width || renderer.canvas.clientHeight != height) {
+            if (renderer.width != width || renderer.width != height) {
                 renderer.resize(width, height)
                 onResize(renderer, width, height)
             }
