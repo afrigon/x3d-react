@@ -57,18 +57,28 @@ export function ManagedCanvas3d({ onInit, onResize, onDraw, className, style }: 
         }
 
         function _keydown(event: KeyboardEvent) {
+            console.debug(`down: ${event.key}`)
+
             if (input.isLocked && event.key == "Escape") {
                 document.exitPointerLock()
+            }
+
+            if (input.isLocked) {
+                event.preventDefault()
             }
 
             input.didPress(event.key)
         }
 
         function _keyup(event: KeyboardEvent) {
+            console.debug(`up: ${event.key}`)
+
             input.didRelease(event.key)
         }
 
         function _pointerdown(event: PointerEvent) {
+            console.debug(`pointer-down: ${event.button}`)
+
             if (!input.isLocked && event.button == 0) {
                 renderer?.canvas.requestPointerLock().catch(() => {})
             }
@@ -77,6 +87,8 @@ export function ManagedCanvas3d({ onInit, onResize, onDraw, className, style }: 
         }
 
         function _pointerup(event: PointerEvent) {
+            console.debug(`pointer-up: ${event.button}`)
+
             input.didRelease(`pointer-${event.button}`)
         }
 
@@ -87,6 +99,8 @@ export function ManagedCanvas3d({ onInit, onResize, onDraw, className, style }: 
         }
 
         function _wheel(event: WheelEvent) {
+            console.debug("wheel")
+
             if (input.isLocked) {
                 event.preventDefault()
             }
@@ -95,6 +109,8 @@ export function ManagedCanvas3d({ onInit, onResize, onDraw, className, style }: 
         }
 
         function _lockchange() {
+            console.debug("lock-changed")
+
             input.clearDelta()
 
             if (!renderer) {
@@ -105,6 +121,8 @@ export function ManagedCanvas3d({ onInit, onResize, onDraw, className, style }: 
         }
 
         function _lockerror() {
+            console.debug("lock-error")
+
             document.exitPointerLock()
         }
 
