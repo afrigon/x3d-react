@@ -5,7 +5,7 @@ import { Canvas3d } from "./Canvas3d"
 interface ManagedCanvas3dProps {
     onInit: (renderer: x3d.SceneRenderer) => void,
     onResize: (renderer: x3d.SceneRenderer, width: number, height: number) => void,
-    onDraw: (renderer: x3d.SceneRenderer, now: number) => void,
+    onDraw: (renderer: x3d.SceneRenderer, input: x3d.Input, delta: number) => void,
     className?: string
     style?: CSSProperties
 }
@@ -15,6 +15,8 @@ export function ManagedCanvas3d({ onInit, onResize, onDraw, className, style }: 
 
     useEffect(() => {
         const renderer = ref.current
+        const input = new x3d.Input()
+        let previous: DOMHighResTimeStamp
 
         if (!renderer) {
             return
@@ -39,6 +41,8 @@ export function ManagedCanvas3d({ onInit, onResize, onDraw, className, style }: 
 
         function _draw(now: DOMHighResTimeStamp) {
             frameId = requestAnimationFrame(_draw)
+            const delta = now - (previous ?? now)
+            previous = now
 
             _resize()
 
@@ -46,7 +50,62 @@ export function ManagedCanvas3d({ onInit, onResize, onDraw, className, style }: 
                 return
             }
 
-            onDraw(renderer, now)
+            onDraw(renderer, input, delta)
+
+            input.clearDelta()
+            input.clearButtonUpdates()
+        }
+
+        function _keydown(event: KeyboardEvent) {
+            if (input.isLocked && event.key == "Escape") {
+                document.exitPointerLock()
+            }
+
+            input.didPress(event.key)
+        }
+
+        function _keyup(event: KeyboardEvent) {
+            input.didRelease(event.key)
+        }
+
+        function _pointerdown(event: PointerEvent) {
+            if (!input.isLocked && event.button == 0) {
+                renderer?.canvas.requestPointerLock().catch(() => {})
+            }
+
+            input.didPress(`pointer-${event.button}`)
+        }
+
+        function _pointerup(event: PointerEvent) {
+            input.didRelease(`pointer-${event.button}`)
+        }
+
+        function _pointermove(event: PointerEvent) {
+            if (input.isLocked) {
+                input.addCursorDelta(event.movementX, event.movementY)
+            }
+        }
+
+        function _wheel(event: WheelEvent) {
+            if (input.isLocked) {
+                event.preventDefault()
+            }
+
+            input.addScrollDelta(event.deltaX, event.deltaY)
+        }
+
+        function _lockchange() {
+            input.clearDelta()
+
+            if (!renderer) {
+                return input.isLocked = false
+            }
+
+            input.isLocked = document.pointerLockElement == renderer.canvas
+        }
+
+        function _lockerror() {
+            document.exitPointerLock()
         }
 
         const observer = new ResizeObserver(_resize)
@@ -56,9 +115,27 @@ export function ManagedCanvas3d({ onInit, onResize, onDraw, className, style }: 
 
         frameId = requestAnimationFrame(_draw)
 
+        window.addEventListener("keydown", _keydown)
+        window.addEventListener("keyup", _keyup)
+        renderer.canvas.addEventListener("pointerdown", _pointerdown)
+        renderer.canvas.addEventListener("pointerup", _pointerup)
+        renderer.canvas.addEventListener("pointermove", _pointermove)
+        renderer.canvas.addEventListener("wheel", _wheel, { passive: false })
+        document.addEventListener("pointerlockchange", _lockchange)
+        document.addEventListener("pointerlockerror", _lockerror)
+
         return () => {
             observer.disconnect()
             cancelAnimationFrame(frameId)
+
+            window.removeEventListener("keydown", _keydown)
+            window.removeEventListener("keyup", _keyup)
+            renderer.canvas.removeEventListener("pointerdown", _pointerdown)
+            renderer.canvas.removeEventListener("pointerup", _pointerup)
+            renderer.canvas.removeEventListener("pointermove", _pointermove)
+            renderer.canvas.removeEventListener("wheel", _wheel)
+            document.removeEventListener("pointerlockchange", _lockchange)
+            document.removeEventListener("pointerlockerror", _lockerror)
 
             renderer.delete()
         }
