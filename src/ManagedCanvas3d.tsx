@@ -73,11 +73,15 @@ export function ManagedCanvas3d({
                 event.preventDefault()
             }
 
-            input.didPress(event.key)
+            if (input.isLocked || !locksCursor) {
+                input.didPress(event.key)
+            }
         }
 
         function _keyup(event: KeyboardEvent) {
-            input.didRelease(event.key)
+            if (input.isLocked || !locksCursor) {
+                input.didRelease(event.key)
+            }
         }
 
         function _pointerdown(event: PointerEvent) {
@@ -97,8 +101,10 @@ export function ManagedCanvas3d({
                 return
             }
 
-            if (input.isLocked) {
-                input.addCursorDelta(event.movementX, event.movementY)
+            if (locksCursor) {
+                if (input.isLocked) {
+                    input.addCursorDelta(event.movementX, event.movementY)
+                }
             } else {
                 const rect = renderer.canvas.getBoundingClientRect()
                 const x = event.clientX - rect.left
@@ -128,7 +134,9 @@ export function ManagedCanvas3d({
                 event.preventDefault()
             }
 
-            input.addScrollDelta(event.deltaX, event.deltaY)
+            if (input.isLocked || !locksCursor) {
+                input.addScrollDelta(event.deltaX, event.deltaY)
+            }
         }
 
         function _lockchange() {
