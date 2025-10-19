@@ -97,14 +97,19 @@ export function ManagedCanvas3d({
                 return
             }
 
-            const rect = renderer.canvas.getBoundingClientRect()
-            const x = event.clientX - rect.left
-            const y = event.clientY - rect.top
+            if (input.isLocked) {
+                input.cursorDelta = new x3d.Vector2(renderer.width / 2, renderer.height / 2)
+                input.addCursorDelta(event.movementX, event.movementY)
+            } else {
+                const rect = renderer.canvas.getBoundingClientRect()
+                const x = event.clientX - rect.left
+                const y = event.clientY - rect.top
 
-            const previous = input.cursorPosition
-            input.cursorPosition = new x3d.Vector2(x, y)
+                const previous = input.cursorPosition
+                input.cursorPosition = new x3d.Vector2(x, y)
 
-            input.addCursorDelta(previous.x - x, previous.y - y)
+                input.addCursorDelta(x - previous.x, y - previous.y)
+            }
         }
 
         function _wheel(event: WheelEvent) {
