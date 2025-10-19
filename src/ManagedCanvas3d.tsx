@@ -98,7 +98,6 @@ export function ManagedCanvas3d({
             }
 
             if (input.isLocked) {
-                input.cursorPosition = new x3d.Vector2(renderer.width / 2, renderer.height / 2)
                 input.addCursorDelta(event.movementX, event.movementY)
             } else {
                 const rect = renderer.canvas.getBoundingClientRect()
@@ -110,6 +109,18 @@ export function ManagedCanvas3d({
 
                 input.addCursorDelta(x - previous.x, y - previous.y)
             }
+        }
+
+        function _pointerenter(event: PointerEvent) {
+            if (!renderer) {
+                return
+            }
+
+            const rect = renderer.canvas.getBoundingClientRect()
+            const x = event.clientX - rect.left
+            const y = event.clientY - rect.top
+
+            input.cursorPosition = new x3d.Vector2(x, y)
         }
 
         function _wheel(event: WheelEvent) {
@@ -146,6 +157,7 @@ export function ManagedCanvas3d({
         renderer.canvas.addEventListener("pointerdown", _pointerdown)
         renderer.canvas.addEventListener("pointerup", _pointerup)
         renderer.canvas.addEventListener("pointermove", _pointermove)
+        renderer.canvas.addEventListener("pointerenter", _pointerenter)
         renderer.canvas.addEventListener("wheel", _wheel, { passive: false })
         document.addEventListener("pointerlockchange", _lockchange)
         document.addEventListener("pointerlockerror", _lockerror)
@@ -159,6 +171,7 @@ export function ManagedCanvas3d({
             renderer.canvas.removeEventListener("pointerdown", _pointerdown)
             renderer.canvas.removeEventListener("pointerup", _pointerup)
             renderer.canvas.removeEventListener("pointermove", _pointermove)
+            renderer.canvas.removeEventListener("pointerenter", _pointerenter)
             renderer.canvas.removeEventListener("wheel", _wheel)
             document.removeEventListener("pointerlockchange", _lockchange)
             document.removeEventListener("pointerlockerror", _lockerror)
