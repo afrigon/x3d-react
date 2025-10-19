@@ -98,8 +98,7 @@ export function ManagedCanvas3d({
             }
 
             if (input.isLocked) {
-                input.cursorDelta = new x3d.Vector2(renderer.width / 2, renderer.height / 2)
-                console.log(event.movementX, event.movementY)
+                input.cursorPosition = new x3d.Vector2(renderer.width / 2, renderer.height / 2)
                 input.addCursorDelta(event.movementX, event.movementY)
             } else {
                 const rect = renderer.canvas.getBoundingClientRect()
@@ -114,8 +113,6 @@ export function ManagedCanvas3d({
         }
 
         function _wheel(event: WheelEvent) {
-            console.debug("wheel")
-
             if (input.isLocked) {
                 event.preventDefault()
             }
