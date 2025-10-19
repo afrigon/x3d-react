@@ -99,6 +99,7 @@ export function ManagedCanvas3d({
 
             if (input.isLocked) {
                 input.cursorDelta = new x3d.Vector2(renderer.width / 2, renderer.height / 2)
+                console.log(event.movementX, event.movementY)
                 input.addCursorDelta(event.movementX, event.movementY)
             } else {
                 const rect = renderer.canvas.getBoundingClientRect()
