@@ -6,11 +6,19 @@ interface ManagedCanvas3dProps {
     onInit: (renderer: x3d.SceneRenderer) => void,
     onResize: (renderer: x3d.SceneRenderer, width: number, height: number) => void,
     onDraw: (renderer: x3d.SceneRenderer, input: x3d.Input, delta: number) => void,
+    locksCursor: boolean
     className?: string
     style?: CSSProperties
 }
 
-export function ManagedCanvas3d({ onInit, onResize, onDraw, className, style }: ManagedCanvas3dProps) {
+export function ManagedCanvas3d({ 
+    onInit, 
+    onResize, 
+    onDraw, 
+    locksCursor,
+    className, 
+    style 
+}: ManagedCanvas3dProps) {
     const ref: RefObject<x3d.SceneRenderer | null> = useRef(null)
 
     useEffect(() => {
@@ -57,8 +65,6 @@ export function ManagedCanvas3d({ onInit, onResize, onDraw, className, style }: 
         }
 
         function _keydown(event: KeyboardEvent) {
-            console.debug(`down: ${event.key}`)
-
             if (input.isLocked && event.key == "Escape") {
                 document.exitPointerLock()
             }
@@ -71,15 +77,11 @@ export function ManagedCanvas3d({ onInit, onResize, onDraw, className, style }: 
         }
 
         function _keyup(event: KeyboardEvent) {
-            console.debug(`up: ${event.key}`)
-
             input.didRelease(event.key)
         }
 
         function _pointerdown(event: PointerEvent) {
-            console.debug(`pointer-down: ${event.button}`)
-
-            if (!input.isLocked && event.button == 0) {
+            if (!input.isLocked && event.button == 0 && locksCursor) {
                 renderer?.canvas.requestPointerLock().catch(() => {})
             }
 
@@ -87,15 +89,22 @@ export function ManagedCanvas3d({ onInit, onResize, onDraw, className, style }: 
         }
 
         function _pointerup(event: PointerEvent) {
-            console.debug(`pointer-up: ${event.button}`)
-
             input.didRelease(`pointer-${event.button}`)
         }
 
         function _pointermove(event: PointerEvent) {
-            if (input.isLocked) {
-                input.addCursorDelta(event.movementX, event.movementY)
+            if (!renderer) {
+                return
             }
+
+            const rect = renderer.canvas.getBoundingClientRect()
+            const x = event.clientX - rect.left
+            const y = event.clientY - rect.top
+
+            const previous = input.cursorPosition
+            input.cursorPosition = new x3d.Vector2(x, y)
+
+            input.addCursorDelta(previous.x - x, previous.y - y)
         }
 
         function _wheel(event: WheelEvent) {
@@ -109,8 +118,6 @@ export function ManagedCanvas3d({ onInit, onResize, onDraw, className, style }: 
         }
 
         function _lockchange() {
-            console.debug("lock-changed")
-
             input.clearDelta()
 
             if (!renderer) {
@@ -121,8 +128,6 @@ export function ManagedCanvas3d({ onInit, onResize, onDraw, className, style }: 
         }
 
         function _lockerror() {
-            console.debug("lock-error")
-
             document.exitPointerLock()
         }
 
