@@ -156,6 +156,7 @@ export function ManagedCanvas3d({
         const observer = new ResizeObserver(_resize)
         observer.observe(renderer.canvas)
 
+        renderer.init()
         onInit(renderer)
 
         frameId = requestAnimationFrame(_draw)
