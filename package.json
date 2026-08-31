@@ -1,6 +1,7 @@
 {
   "name": "x3d-react",
   "version": "0.0.1",
+  "packageManager": "aube@2.2.0",
   "license": "MIT",
   "author": "xehos",
   "keywords": [
