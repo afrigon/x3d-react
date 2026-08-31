@@ -46,5 +46,12 @@
   "dependencies": {
     "react": "^19.2.0",
     "x3d": "github:afrigon/x3d-js"
+  },
+  "devEngines": {
+    "runtime": {
+      "name": "node",
+      "version": "^24.20.0",
+      "onFail": "download"
+    }
   }
 }
